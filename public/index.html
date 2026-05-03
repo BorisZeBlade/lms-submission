@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LMS Submission Manager</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Software Testing and Quality Assurance</p>
+      <h1>LMS Submission Manager</h1>
+      <p class="subtitle">CRUD web application for the assigned topic: <strong>Submission in an LMS</strong>.</p>
+    </div>
+    <div class="hero-card">
+      <span>PostgreSQL</span>
+      <span>Express API</span>
+      <span>Cypress + Jest</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel form-panel">
+      <h2 id="form-title">Create Submission</h2>
+      <p class="muted">Fill in the form to add or update a student submission.</p>
+
+      <form id="submission-form" novalidate>
+        <input type="hidden" id="submission-id" />
+
+        <label for="student_name">Student Name</label>
+        <input id="student_name" name="student_name" type="text" placeholder="Roman Nesterenko" required />
+
+        <label for="student_email">Student Email</label>
+        <input id="student_email" name="student_email" type="email" placeholder="roman@example.com" required />
+
+        <label for="course_name">Course Name</label>
+        <input id="course_name" name="course_name" type="text" placeholder="Software Testing and Quality Assurance" required />
+
+        <label for="assignment_title">Assignment Title</label>
+        <input id="assignment_title" name="assignment_title" type="text" placeholder="Final Exam Project" required />
+
+        <div class="grid-two">
+          <div>
+            <label for="submitted_at">Submitted At</label>
+            <input id="submitted_at" name="submitted_at" type="datetime-local" />
+          </div>
+          <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="draft">Draft</option>
+              <option value="submitted" selected>Submitted</option>
+              <option value="late">Late</option>
+              <option value="graded">Graded</option>
+              <option value="returned">Returned</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="grade">Grade</label>
+        <input id="grade" name="grade" type="number" min="0" max="100" step="0.01" placeholder="95" />
+
+        <label for="file_url">File URL</label>
+        <input id="file_url" name="file_url" type="url" placeholder="https://example.com/submission.pdf" />
+
+        <label for="feedback">Feedback</label>
+        <textarea id="feedback" name="feedback" rows="4" placeholder="Teacher feedback or notes"></textarea>
+
+        <div class="actions">
+          <button type="submit" id="submit-button">Save Submission</button>
+          <button type="button" id="cancel-button" class="secondary hidden">Cancel Edit</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel list-panel">
+      <div class="list-header">
+        <div>
+          <h2>Submissions</h2>
+          <p class="muted" id="stats-text">Loading statistics...</p>
+        </div>
+        <button id="refresh-button" class="secondary">Refresh</button>
+      </div>
+
+      <div id="message" class="message hidden"></div>
+
+      <div class="filters">
+        <input id="search-input" type="search" placeholder="Search by student, course, email..." />
+        <select id="status-filter">
+          <option value="">All statuses</option>
+          <option value="draft">Draft</option>
+          <option value="submitted">Submitted</option>
+          <option value="late">Late</option>
+          <option value="graded">Graded</option>
+          <option value="returned">Returned</option>
+        </select>
+      </div>
+
+      <div id="submissions-list" class="submissions-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Final exam project - Roman Nesterenko - Submission in an LMS</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

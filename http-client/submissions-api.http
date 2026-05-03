@@ -1,0 +1,167 @@
+### 1. Health check
+GET {{baseUrl}}/api/health
+
+> {%
+client.test("Health endpoint returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+client.test("Health endpoint returns correct topic", function () {
+  client.assert(response.body.topic === "Submission in an LMS", "Expected assigned LMS topic");
+});
+%}
+
+### 2. Create submission
+POST {{baseUrl}}/api/submissions
+Content-Type: application/json
+
+{
+  "student_name": "Roman Nesterenko",
+  "student_email": "{{studentEmail}}",
+  "course_name": "Software Testing and Quality Assurance",
+  "assignment_title": "HTTP Client Final Exam Submission",
+  "status": "submitted",
+  "grade": null,
+  "feedback": "Created from IntelliJ HTTP Client test.",
+  "file_url": "https://example.com/http-client-submission.pdf"
+}
+
+> {%
+client.test("Create submission returns 201", function () {
+  client.assert(response.status === 201 || response.status === 409, "Expected 201 Created or 409 if already exists");
+});
+if (response.status === 201) {
+  client.global.set("submission_id", response.body.data.id);
+}
+%}
+
+### 3. Get all submissions
+GET {{baseUrl}}/api/submissions
+
+> {%
+client.test("Get all submissions returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+client.test("Response body contains an array", function () {
+  client.assert(Array.isArray(response.body.data), "Expected data to be an array");
+});
+%}
+
+### 4. Search submissions by email
+GET {{baseUrl}}/api/submissions?search={{studentEmail}}
+
+> {%
+client.test("Search request returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### 5. Filter submissions by status
+GET {{baseUrl}}/api/submissions?status=submitted
+
+> {%
+client.test("Status filter returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### 6. Get one submission by ID
+GET {{baseUrl}}/api/submissions/{{submission_id}}
+
+> {%
+client.test("Get submission by ID returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### 7. Update submission
+PUT {{baseUrl}}/api/submissions/{{submission_id}}
+Content-Type: application/json
+
+{
+  "student_name": "Roman Nesterenko",
+  "student_email": "{{studentEmail}}",
+  "course_name": "Software Testing and Quality Assurance",
+  "assignment_title": "HTTP Client Final Exam Submission",
+  "status": "graded",
+  "grade": 95,
+  "feedback": "Updated and graded from HTTP Client.",
+  "file_url": "https://example.com/http-client-submission.pdf"
+}
+
+> {%
+client.test("Update submission returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+client.test("Updated grade is correct", function () {
+  client.assert(response.body.data.grade == 95, "Expected grade 95");
+});
+%}
+
+### 8. Reject invalid email
+POST {{baseUrl}}/api/submissions
+Content-Type: application/json
+
+{
+  "student_name": "Invalid Email Student",
+  "student_email": "wrong-email",
+  "course_name": "Software Testing and Quality Assurance",
+  "assignment_title": "Invalid Email Test",
+  "status": "submitted"
+}
+
+> {%
+client.test("Invalid email returns 400", function () {
+  client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### 9. Reject invalid grade
+PUT {{baseUrl}}/api/submissions/{{submission_id}}
+Content-Type: application/json
+
+{
+  "student_name": "Roman Nesterenko",
+  "student_email": "{{studentEmail}}",
+  "course_name": "Software Testing and Quality Assurance",
+  "assignment_title": "HTTP Client Final Exam Submission",
+  "status": "graded",
+  "grade": 150,
+  "feedback": "Invalid grade test.",
+  "file_url": "https://example.com/http-client-submission.pdf"
+}
+
+> {%
+client.test("Invalid grade returns 400", function () {
+  client.assert(response.status === 400, "Expected 400 Bad Request");
+});
+%}
+
+### 10. Get statistics
+GET {{baseUrl}}/api/submissions/stats/summary
+
+> {%
+client.test("Statistics endpoint returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+client.test("Statistics contains total count", function () {
+  client.assert(response.body.data.total >= 0, "Expected total count");
+});
+%}
+
+### 11. Delete submission
+DELETE {{baseUrl}}/api/submissions/{{submission_id}}
+
+> {%
+client.test("Delete submission returns 200", function () {
+  client.assert(response.status === 200, "Expected 200 OK");
+});
+%}
+
+### 12. Deleted submission returns 404
+GET {{baseUrl}}/api/submissions/{{submission_id}}
+
+> {%
+client.test("Deleted submission returns 404", function () {
+  client.assert(response.status === 404, "Expected 404 Not Found");
+});
+%}

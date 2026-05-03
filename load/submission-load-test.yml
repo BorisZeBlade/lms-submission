@@ -1,0 +1,42 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 20
+      arrivalRate: 5
+      name: "Warm up with 5 users per second"
+    - duration: 30
+      arrivalRate: 10
+      rampTo: 25
+      name: "Ramp to 25 users per second"
+    - duration: 20
+      arrivalRate: 25
+      name: "Sustained load"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  processor: "./load-data.js"
+
+scenarios:
+  - name: "Read submissions and create new LMS submission"
+    flow:
+      - get:
+          url: "/api/health"
+      - get:
+          url: "/api/submissions"
+      - function: "generateSubmission"
+      - post:
+          url: "/api/submissions"
+          json:
+            student_name: "{{ student_name }}"
+            student_email: "{{ student_email }}"
+            course_name: "{{ course_name }}"
+            assignment_title: "{{ assignment_title }}"
+            status: "submitted"
+            feedback: "Created by Artillery load test."
+            file_url: "https://example.com/load-test-submission.pdf"
+          capture:
+            - json: "$.data.id"
+              as: "submission_id"
+      - think: 1
+      - get:
+          url: "/api/submissions/stats/summary"

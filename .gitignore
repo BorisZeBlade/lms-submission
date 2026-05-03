@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.local
+coverage/
+.nyc_output/
+load/artillery-report.json
+load/artillery-report.html
+cypress/videos/
+cypress/screenshots/
+npm-debug.log*
+.DS_Store
+.idea/
+.vscode/
