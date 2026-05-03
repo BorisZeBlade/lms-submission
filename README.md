@@ -17,5 +17,4 @@ The project is designed for the final creative exam requirements:
 - test coverage report;
 - Cypress E2E tests;
 - Artillery load testing;
-- no Docker.
 
